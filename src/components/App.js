@@ -1,13 +1,48 @@
-import React from "react";
-import AccountContainer from "./AccountContainer";
+import React, { useState, useEffect } from "react";
+import BotCollection from "./BotCollection";
+import BotArmy from "./BotArmy";
 
 function App() {
+  const [bots, setBots] = useState([]);
+  const [army, setArmy] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8001/bots")
+      .then((response) => response.json())
+      .then((data) => setBots(data));
+  }, []);
+
+  const addToArmy = (bot) => {
+    if (!army.some((b) => b.id === bot.id)) {
+      setArmy([...army, bot]);
+    }
+  };
+
+  const releaseFromArmy = (bot) => {
+    setArmy(army.filter((b) => b.id !== bot.id));
+  };
+
+  const deleteBotFromCollection = (botId) => {
+    fetch(`http://localhost:8001/bots/${botId}`, {
+      method: "DELETE"
+    }).then(() => {
+      setBots(bots.filter((bot) => bot.id !== botId));
+      setArmy(army.filter((b) => b.id !== botId));
+    });
+  };
+
   return (
-    <div className="ui raised segment">
-      <div className="ui segment violet inverted">
-        <h2>The Royal Bank of Flatiron</h2>
-      </div>
-      <AccountContainer />
+    <div className="App">
+      <BotArmy
+        army={army}
+        onReleaseFromArmy={releaseFromArmy}
+        onDelete={deleteBotFromCollection}
+      />
+      <BotCollection
+        bots={bots}
+        onAddToArmy={addToArmy}
+        onDelete={deleteBotFromCollection}
+      />
     </div>
   );
 }
