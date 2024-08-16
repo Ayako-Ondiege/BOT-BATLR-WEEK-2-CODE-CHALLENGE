@@ -7,7 +7,7 @@ function App() {
   const [army, setArmy] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8001/bots")
+    fetch("/api/fetchData/bots")
       .then((response) => response.json())
       .then((data) => setBots(data));
   }, []);
@@ -23,7 +23,7 @@ function App() {
   };
 
   const deleteBotFromCollection = (botId) => {
-    fetch(`http://localhost:8001/bots/${botId}`, {
+    fetch(`/api/fetchData/bots/${botId}`, {
       method: "DELETE"
     }).then(() => {
       setBots(bots.filter((bot) => bot.id !== botId));
